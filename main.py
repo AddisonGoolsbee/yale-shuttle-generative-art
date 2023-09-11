@@ -12,10 +12,10 @@ while True:
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
             x, y = pygame.mouse.get_pos()
-            # make white background
-            screen.fill((255, 255, 255))
-            # draw a red pixel at the click position
-            pygame.draw.rect(screen, (255, 0, 0), (x, y, 1, 1))
+            # make black background
+            screen.fill((0, 0, 0))
+            # draw a green pixel at the click position
+            pygame.draw.rect(screen, (0, 255, 0), (x, y, 1, 1))
             # update display
             pygame.display.update()
             # print coords
