@@ -1,4 +1,4 @@
-#!/Users/addisongoolsbee/Desktop/class/CPSC-334/GenArt/venv/bin/python3.11
+#!/Users/primary/Documents/GitHub/cs334/shared-projects/cpsc334-generative-art/venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys
