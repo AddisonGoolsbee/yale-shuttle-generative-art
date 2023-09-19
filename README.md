@@ -16,4 +16,5 @@ Using Python, this program displays the ETA for the Yale Shuttle ("Yuttle") to a
 Parameters:
 `stop`: the stop to monitor (defaults to `10`, representing 333 Cedar)
 - the full list of options is available at https://yale.downtownerapp.com/text/routes. Find the stop then observe the integer at the end of the URL.
+
 `lifespan`: time (in ms) that circles should remain on the screen (defaults to `20000`)
