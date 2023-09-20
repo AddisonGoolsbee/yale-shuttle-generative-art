@@ -5,19 +5,19 @@ import random
 import requests
 
 # Constants
-BACKGROUND_COLOR = (255, 255, 255)
+BACKGROUND_COLOR = (0, 0, 0)
 DEFAULT_COLOR = (255, 0, 0)
-NUM_CIRCLES = 10
-NUM_CIRCLES_RANGE = 5
-PULSE_SPEED = 0.2
+NUM_CIRCLES = 50
+NUM_CIRCLES_RANGE = 15
+PULSE_SPEED = 1
 PULSE_SPEED_RANGE = 0.5
-BASE_PULSE = 0.2
-BASE_PULSE_RANGE = 0.4
-CIRCLE_SIZE = 2
+BASE_PULSE = 1
+BASE_PULSE_RANGE = 3
+CIRCLE_SIZE = 4
 CIRCLE_SIZE_RANGE = 3
-CIRCLE_MAX = 20
+CIRCLE_MAX = 12
 # Integer representing the stop we want to display data for
-STOP_INT = 10
+STOP_INT = 2
 # Out of 255, how transparent should the circles be?
 TRANSPARENCY = 128
 
@@ -28,11 +28,19 @@ class Bus:
         self.name = name
         self.circles = []
         self.current_time = current_time
-        self.modifier = 50 / (current_time + 1)
+        self.modifier = self.calculate_modifier()
         self.color = color
 
     def __str__(self):
         return f"Name: {self.name}, Circles: {self.circles}, Current Time: {self.current_time}"
+
+    def __lt__(self, other):
+        return self.current_time > other.current_time
+
+    def calculate_modifier(self):
+        a = (self.current_time) / 5
+        b = max(3 - a, 1)
+        return b
 
     def getCircles(self):
         # Adjust the base number of circles based on ETA.
@@ -43,25 +51,20 @@ class Bus:
                 * self.modifier
             )
         ):
-            circle_radius = (
-                random.randint(CIRCLE_SIZE, CIRCLE_SIZE_RANGE + CIRCLE_SIZE)
-                * self.modifier
-                / 1000
-            )
-            circle_max_radius = (
-                random.randint(CIRCLE_MAX, CIRCLE_MAX + CIRCLE_SIZE_RANGE)
-                * self.modifier
-                / 1000
-            )
-            circle_pulse_speed = (
-                random.uniform(PULSE_SPEED, PULSE_SPEED + PULSE_SPEED_RANGE)
-                * self.modifier
-                / 10
-            )
+            circle_radius = random.uniform(
+                CIRCLE_SIZE, CIRCLE_SIZE_RANGE + CIRCLE_SIZE
+            ) * (self.modifier**1.5)
+            circle_max_radius = random.uniform(
+                CIRCLE_MAX, CIRCLE_MAX + CIRCLE_SIZE_RANGE
+            ) * (self.modifier**1.3)
+            circle_pulse_speed = random.uniform(
+                PULSE_SPEED, PULSE_SPEED + PULSE_SPEED_RANGE
+            ) * (self.modifier**1.5)
             circle_position = (random.randint(0, WIDTH), random.randint(0, HEIGHT))
             pulsing_factor = (
                 random.uniform(BASE_PULSE, BASE_PULSE + BASE_PULSE_RANGE)
                 * self.modifier
+                / 5
             )
             self.circles.append(
                 (
@@ -161,7 +164,7 @@ while running:
 
     screen.fill(BACKGROUND_COLOR)
 
-    for bus in busses:
+    for bus in sorted(busses):
         for circle_props in bus.circles:
             (
                 circle_radius,
