@@ -16,6 +16,8 @@ BASE_PULSE_RANGE = 0.4
 CIRCLE_SIZE = 2
 CIRCLE_SIZE_RANGE = 3
 CIRCLE_MAX = 20
+# Integer representing the stop we want to display data for
+STOP_INT = 10
 
 
 # Name, circles, and time away for each bus route
@@ -64,26 +66,13 @@ class Bus:
                 )
             )
 
-stop_int = 10
 # Fetch JSON data
-url = f"https://yale.downtownerapp.com/routes_eta.php?stop={stop_int}"
+url = f"https://yale.downtownerapp.com/routes_eta.php?stop={STOP_INT}"
 response = requests.get(url)
 data = response.json()
 
 # Extract shuttle details
-shuttle_details = data["etas"][f"{stop_int}"]["etas"]
-
-# Group results by route and find the closest shuttle for each route
-closest_shuttles = {}
-for detail in shuttle_details:
-    route = detail["route"]
-    # If the route isn't in closest_shuttles yet, or the new detail has an earlier arrival time, update it.
-    if route not in closest_shuttles or detail["avg"] < closest_shuttles[route]["eta"]:
-        closest_shuttles[route] = {
-            "eta": detail["avg"]
-        }
-# print to stdout for debugging (and fun!)
-print(closest_shuttles)
+shuttle_details = data["etas"][f"{STOP_INT}"]["etas"]
 
 # gets the eta for a given route_int
 def get_eta(route_int):
@@ -111,7 +100,18 @@ def route_to_color(route_int):
     # return the color for the route
     return route_to_color_dict[route_int]
 
-
+# Group results by route and find the closest shuttle for each route
+closest_shuttles = {}
+for detail in shuttle_details:
+    route = detail["route"]
+    # If the route isn't in closest_shuttles yet, or the new detail has an earlier arrival time, update it.
+    if route not in closest_shuttles or detail["avg"] < closest_shuttles[route]["eta"]:
+        closest_shuttles[route] = {
+            "eta": detail["avg"],
+            "color": route_to_color(route)
+        }
+# print to stdout for debugging (and fun!)
+print(closest_shuttles)
 
 # Initialize Pygame
 pygame.init()
