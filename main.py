@@ -13,17 +13,20 @@ PULSE_SPEED = 1
 PULSE_SPEED_RANGE = 0.5
 BASE_PULSE = 1
 BASE_PULSE_RANGE = 3
-CIRCLE_SIZE = 4
-CIRCLE_SIZE_RANGE = 3
+CIRCLE_SIZE = 3
+CIRCLE_SIZE_RANGE = 2
 CIRCLE_MAX = 12
 # Integer representing the stop we want to display data for
 STOP_INT = 2
 # Out of 255, how transparent should the circles be?
+# Doesn't actually do anything but can't remove it
 TRANSPARENCY = 128
-CIRCLE_ADD_RATE = 100  # Add a circle every 2 seconds in milliseconds
+CIRCLE_ADD_RATE = 100  # Add a circle every x milliseconds
 UPDATE_EVENT = pygame.USEREVENT
 query_counter = 0  # Counter to keep track of UPDATE_EVENT occurrences
-QUERY_FREQUENCY = 100  # Number of times the UPDATE_EVENT should fire before querying the website. Set this to your desired frequency.
+# Number of times UPDATE_EVENT should fire before querying the website.
+# This number divided by 10 is the time in seconds before refreshing the data.
+QUERY_FREQUENCY = 1200
 
 
 
@@ -52,11 +55,11 @@ class Bus:
         if random.random() < self.modifier:
             circle_radius = (
                 random.randint(CIRCLE_SIZE, CIRCLE_SIZE_RANGE + CIRCLE_SIZE)
-                * self.modifier
+                * (self.modifier**1.5)
             )
             circle_max_radius = (
                 random.randint(CIRCLE_MAX, CIRCLE_MAX + CIRCLE_SIZE_RANGE)
-                * (self.modifier**1.5)
+                * (self.modifier**1.3)
             )
             circle_pulse_speed = (
                 random.uniform(PULSE_SPEED, PULSE_SPEED + PULSE_SPEED_RANGE)
@@ -75,7 +78,7 @@ class Bus:
                 "position": circle_position,
                 "pulsing_factor": pulsing_factor,
                 "lifetime": 20 * 1000,  # 20 seconds in milliseconds
-                "alpha": 255  # Fully opaque to start
+                "alpha": 200  # Mostly opaque to start
                 })
     def addCircle(self):
         circle_radius = (
@@ -102,7 +105,7 @@ class Bus:
             "position": circle_position,
             "pulsing_factor": pulsing_factor,
             "lifetime": 20 * 1000,  # 20 seconds in milliseconds
-            "alpha": 255  # Fully opaque to start
+            "alpha": 200  # Mostly opaque to start
         })
 
             
