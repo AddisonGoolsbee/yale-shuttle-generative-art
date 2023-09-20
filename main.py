@@ -21,9 +21,11 @@ for detail in shuttle_details:
 # print to stdout for debugging (and fun!)
 print(closest_shuttles)
 
+# gets the eta for a given route_int
 def get_eta(route_int):
     return closest_shuttles[route_int]["eta"]
 
+# gets the color associated with a given route_int
 def route_to_color(route_int):
     # keep a dictionary of route_int to an RGB color
     route_to_color_dict = {
