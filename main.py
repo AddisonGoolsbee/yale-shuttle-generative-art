@@ -18,6 +18,7 @@ for detail in shuttle_details:
         closest_shuttles[route] = {
             "eta": detail["avg"]
         }
+# print to stdout for debugging (and fun!)
 print(closest_shuttles)
 
 def get_eta(route_int):
@@ -25,7 +26,6 @@ def get_eta(route_int):
 
 def route_to_color(route_int):
     # keep a dictionary of route_int to an RGB color
-    # start with route 1 as red, route 2 as blue, etc.
     route_to_color_dict = {
         1: (33, 100, 255), # weekday blue
         2: (255, 165, 0), # weekday orange
