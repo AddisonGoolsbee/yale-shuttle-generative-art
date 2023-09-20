@@ -6,6 +6,7 @@ Using Python, this program in `identify.py` creates a black screen. When clicked
 ## Task 2
 Using Python, this program in `main.py` displays the ETA for the Yale Shuttles ("Yuttle") to arrive at a stop, displayed as pulsing circles on a screen. The program continuously draws circles that fade away slowly, with circle density and movement corresponding to the time that a shuttle is expected to arrive in. Based on how many busses are active, and how far away, you'll see wildly different results. If the screen size is big enough, there will be much more dots to account for it.
 
+![Generative Art](https://youtu.be/d2sUghRlTS0?si=mUJdOdmNxAoiELPD)
 
 ### Setup
 From within the project directory:
