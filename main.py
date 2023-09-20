@@ -5,7 +5,7 @@ import random
 import requests
 
 # Constants
-BACKGROUND_COLOR = (0, 0, 0)
+BACKGROUND_COLOR = (255, 255, 255)
 DEFAULT_COLOR = (255, 0, 0)
 NUM_CIRCLES = 10
 NUM_CIRCLES_RANGE = 5
@@ -18,6 +18,8 @@ CIRCLE_SIZE_RANGE = 3
 CIRCLE_MAX = 20
 # Integer representing the stop we want to display data for
 STOP_INT = 10
+# Out of 255, how transparent should the circles be?
+TRANSPARENCY = 128
 
 
 # Name, circles, and time away for each bus route
@@ -26,13 +28,15 @@ class Bus:
         self.name = name
         self.circles = []
         self.current_time = current_time
-        self.modifier = (1 / current_time) * 30
+        self.modifier = (50 / (current_time + 1))
         self.color = color
 
     def __str__(self):
         return f"Name: {self.name}, Circles: {self.circles}, Current Time: {self.current_time}"
 
     def getCircles(self):
+        # Adjust the base number of circles based on ETA.
+        base_circles = int(60 / (self.current_time + 1))
         for _ in range(
             int(
                 random.uniform(NUM_CIRCLES, NUM_CIRCLES_RANGE + NUM_CIRCLES)
@@ -41,15 +45,15 @@ class Bus:
         ):
             circle_radius = (
                 random.randint(CIRCLE_SIZE, CIRCLE_SIZE_RANGE + CIRCLE_SIZE)
-                * self.modifier
+                * self.modifier/1000
             )
             circle_max_radius = (
                 random.randint(CIRCLE_MAX, CIRCLE_MAX + CIRCLE_SIZE_RANGE)
-                * self.modifier
+                * self.modifier/1000
             )
             circle_pulse_speed = (
                 random.uniform(PULSE_SPEED, PULSE_SPEED + PULSE_SPEED_RANGE)
-                * self.modifier
+                * self.modifier/10
             )
             circle_position = (random.randint(0, WIDTH), random.randint(0, HEIGHT))
             pulsing_factor = (
@@ -82,20 +86,20 @@ def get_eta(route_int):
 def route_to_color(route_int):
     # keep a dictionary of route_int to an RGB color
     route_to_color_dict = {
-        1: (33, 100, 255), # weekday blue
-        2: (255, 165, 0), # weekday orange
-        3: (255, 20, 20), # weekday red
-        4: (138, 212, 255), # weekend daytime blue
-        5: (255, 187, 135), # Orange - Weekday Daytime Express
-        6: (148, 255, 194), # Grocery
-        7: (158, 87, 0), # Cedar
-        8: (255, 30, 230), # Pink - VA
-        9: (0, 255, 102), # Green
-        10: (185, 115, 255), # Purple - Weekend Express
-        11: (100, 50, 0), # Brown
-        12: (255, 255, 0), # Yellow
-        13: (28, 28, 255), # Blue Night
-        14: (201, 151, 0), # Orange Night
+        1: (33, 100, 255, TRANSPARENCY), # weekday blue
+        2: (255, 165, 0, TRANSPARENCY), # weekday orange
+        3: (255, 20, 20, TRANSPARENCY), # weekday red
+        4: (138, 212, 255, TRANSPARENCY), # weekend daytime blue
+        5: (255, 187, 135, TRANSPARENCY), # Orange - Weekday Daytime Express
+        6: (148, 255, 194, TRANSPARENCY), # Grocery
+        7: (158, 87, 0, TRANSPARENCY), # Cedar
+        8: (255, 30, 230, TRANSPARENCY), # Pink - VA
+        9: (0, 255, 102, TRANSPARENCY), # Green
+        10: (185, 115, 255, TRANSPARENCY), # Purple - Weekend Express
+        11: (100, 50, 0, TRANSPARENCY), # Brown
+        12: (255, 255, 0, TRANSPARENCY), # Yellow
+        13: (28, 28, 255, TRANSPARENCY), # Blue Night
+        14: (201, 151, 0, TRANSPARENCY), # Orange Night
     }
     # return the color for the route
     return route_to_color_dict[route_int]
@@ -122,15 +126,18 @@ WIDTH, HEIGHT = screen_info.current_w, screen_info.current_h
 
 
 # Create the fullscreen screen
+pygame.display.set_mode().convert_alpha()
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 pygame.display.set_caption("Pulsing Circles")
 
 # list of all currently active busses
-busses = [
-    Bus("Orange", color=(255, 165, 0)),
-    Bus("Blue", color=(0, 0, 255)),
-    Bus("Cedar", color=(0, 255, 0)),
-]
+busses = []
+for route, details in closest_shuttles.items():
+    bus_name = f"Bus {route}"
+    bus_color = details["color"]
+    bus_eta = details["eta"]
+    bus = Bus(bus_name, current_time=bus_eta, color=bus_color)
+    busses.append(bus)
 
 for bus in busses:
     bus.getCircles()
@@ -162,7 +169,9 @@ while running:
             ) * pulsing_factor * (
                 1 + math.sin(pygame.time.get_ticks() / 1000 * circle_pulse_speed)
             )
-            pygame.draw.circle(screen, bus.color, circle_position, int(pulse_radius))
+            temp_surface = pygame.Surface((2 * int(pulse_radius), 2 * int(pulse_radius)), pygame.SRCALPHA)
+            pygame.draw.circle(temp_surface, bus.color, (int(pulse_radius), int(pulse_radius)), int(pulse_radius))
+            screen.blit(temp_surface, (circle_position[0] - int(pulse_radius), circle_position[1] - int(pulse_radius)))
 
     pygame.display.flip()
     clock.tick(60)
