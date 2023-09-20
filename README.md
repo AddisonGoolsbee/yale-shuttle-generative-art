@@ -19,19 +19,19 @@ From within the project directory:
 
 
 ### Parameters:
-- `STOP_INT`: the stop to monitor (defaults to `10`, representing 333 Cedar)
+- `STOP_INT`: the stop to monitor
     - the full list of options is available at https://yale.downtownerapp.com/text/routes. Find the stop then observe the integer at the end of the URL.
 - `lifetime`: time (in ms) that circles should remain on the screen (defaults to `20000`)
-- `BACKGROUND_COLOR`: the color of the backgroun
+- `BACKGROUND_COLOR`: the color of the background
 - `DEFAULT_COLOR`: the color of the circles that aren't assigned automatically by the bus route
 - `NUM_CIRCLES`: the base minimum number of circles before modifications, for each bus
 - `NUM_CIRCLES_RANGE`: the possible additional number of circles before modifications, for each bus
-- `PULSE_SPEED`: the rate at which circles pusle
-- `PULSE_SPEED_RANGE`: the amount which similar circles vary in pusles
+- `PULSE_SPEED`: the rate at which circles pulse
+- `PULSE_SPEED_RANGE`: the amount which similar circles vary in pulses
 - `BASE_PULSE`: pulse size modifier
 - `BASE_PULSE_RANGE`: pulse size randomness modifier
 - `CIRCLE_SIZE`: circle size modifier
 - `CIRCLE_SIZE_RANGE`: circle size randomness modifier
 - `CIRCLE_MAX`: maximum pulse size
-- `CIRCLE_ADD_RATE`: how frequently to add new circles
-- `QUERY_FREQUENCY`: how frequently the bus data is updated
+- `CIRCLE_ADD_RATE`: how frequently to add new circles (in ms)
+- `QUERY_FREQUENCY`: how frequently the bus data is updated (in deciseconds)
