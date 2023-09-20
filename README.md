@@ -18,7 +18,10 @@ From within the project directory:
 - Create a virtual environment with `python3 -m venv venv `
 - Activate the virtual environment with `source venv/bin/activate`
 - Install requirements with `pip install -r requirements.txt`
-- Run the script with `python3 identify.py`
+- Run the task 1 with `python3 identify.py`
+- Run task 2 with `python3 main.py`
+- To set up task 2 to run at boot, put this at the end of your `~/.bashrc` file:
+    - `sudo python '/home/student334/Desktop/cpsc334-generative-art/main.py'`
 
 
 ### Parameters:

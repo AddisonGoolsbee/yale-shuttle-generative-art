@@ -197,7 +197,7 @@ while running:
             )
 
     pygame.display.flip()
-    clock.tick(60)
+    clock.tick(120)
 
 pygame.quit()
 sys.exit()
