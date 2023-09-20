@@ -28,7 +28,7 @@ class Bus:
         self.name = name
         self.circles = []
         self.current_time = current_time
-        self.modifier = (50 / (current_time + 1))
+        self.modifier = 50 / (current_time + 1)
         self.color = color
 
     def __str__(self):
@@ -45,15 +45,18 @@ class Bus:
         ):
             circle_radius = (
                 random.randint(CIRCLE_SIZE, CIRCLE_SIZE_RANGE + CIRCLE_SIZE)
-                * self.modifier/1000
+                * self.modifier
+                / 1000
             )
             circle_max_radius = (
                 random.randint(CIRCLE_MAX, CIRCLE_MAX + CIRCLE_SIZE_RANGE)
-                * self.modifier/1000
+                * self.modifier
+                / 1000
             )
             circle_pulse_speed = (
                 random.uniform(PULSE_SPEED, PULSE_SPEED + PULSE_SPEED_RANGE)
-                * self.modifier/10
+                * self.modifier
+                / 10
             )
             circle_position = (random.randint(0, WIDTH), random.randint(0, HEIGHT))
             pulsing_factor = (
@@ -69,6 +72,7 @@ class Bus:
                     pulsing_factor,
                 )
             )
+
 
 # Fetch JSON data
 url = f"https://yale.downtownerapp.com/routes_eta.php?stop={STOP_INT}"
@@ -88,23 +92,24 @@ def get_eta(route_int):
 def route_to_color(route_int):
     # keep a dictionary of route_int to an RGB color
     route_to_color_dict = {
-        1: (33, 100, 255, TRANSPARENCY), # weekday blue
-        2: (255, 165, 0, TRANSPARENCY), # weekday orange
-        3: (255, 20, 20, TRANSPARENCY), # weekday red
-        4: (138, 212, 255, TRANSPARENCY), # weekend daytime blue
-        5: (255, 187, 135, TRANSPARENCY), # Orange - Weekday Daytime Express
-        6: (148, 255, 194, TRANSPARENCY), # Grocery
-        7: (158, 87, 0, TRANSPARENCY), # Cedar
-        8: (255, 30, 230, TRANSPARENCY), # Pink - VA
-        9: (0, 255, 102, TRANSPARENCY), # Green
-        10: (185, 115, 255, TRANSPARENCY), # Purple - Weekend Express
-        11: (100, 50, 0, TRANSPARENCY), # Brown
-        12: (255, 255, 0, TRANSPARENCY), # Yellow
-        13: (28, 28, 255, TRANSPARENCY), # Blue Night
-        14: (201, 151, 0, TRANSPARENCY), # Orange Night
+        1: (33, 100, 255, TRANSPARENCY),  # weekday blue
+        2: (255, 165, 0, TRANSPARENCY),  # weekday orange
+        3: (255, 20, 20, TRANSPARENCY),  # weekday red
+        4: (138, 212, 255, TRANSPARENCY),  # weekend daytime blue
+        5: (255, 187, 135, TRANSPARENCY),  # Orange - Weekday Daytime Express
+        6: (148, 255, 194, TRANSPARENCY),  # Grocery
+        7: (158, 87, 0, TRANSPARENCY),  # Cedar
+        8: (255, 30, 230, TRANSPARENCY),  # Pink - VA
+        9: (0, 255, 102, TRANSPARENCY),  # Green
+        10: (185, 115, 255, TRANSPARENCY),  # Purple - Weekend Express
+        11: (100, 50, 0, TRANSPARENCY),  # Brown
+        12: (255, 255, 0, TRANSPARENCY),  # Yellow
+        13: (28, 28, 255, TRANSPARENCY),  # Blue Night
+        14: (201, 151, 0, TRANSPARENCY),  # Orange Night
     }
     # return the color for the route
     return route_to_color_dict[route_int]
+
 
 # Group results by route and find the closest shuttle for each route
 closest_shuttles = {}
@@ -112,10 +117,7 @@ for detail in shuttle_details:
     route = detail["route"]
     # If the route isn't in closest_shuttles yet, or the new detail has an earlier arrival time, update it.
     if route not in closest_shuttles or detail["avg"] < closest_shuttles[route]["eta"]:
-        closest_shuttles[route] = {
-            "eta": detail["avg"],
-            "color": route_to_color(route)
-        }
+        closest_shuttles[route] = {"eta": detail["avg"], "color": route_to_color(route)}
 # print to stdout for debugging (and fun!)
 print(closest_shuttles)
 
@@ -126,8 +128,8 @@ pygame.init()
 screen_info = pygame.display.Info()
 WIDTH, HEIGHT = screen_info.current_w, screen_info.current_h
 
-if pygame.display.Info().current_w > 1000:
-   NUM_CIRCLES *= 3
+if pygame.display.Info().current_w > 2500:
+    NUM_CIRCLES *= 3
 
 
 # Create the fullscreen screen
@@ -174,9 +176,22 @@ while running:
             ) * pulsing_factor * (
                 1 + math.sin(pygame.time.get_ticks() / 1000 * circle_pulse_speed)
             )
-            temp_surface = pygame.Surface((2 * int(pulse_radius), 2 * int(pulse_radius)), pygame.SRCALPHA)
-            pygame.draw.circle(temp_surface, bus.color, (int(pulse_radius), int(pulse_radius)), int(pulse_radius))
-            screen.blit(temp_surface, (circle_position[0] - int(pulse_radius), circle_position[1] - int(pulse_radius)))
+            temp_surface = pygame.Surface(
+                (2 * int(pulse_radius), 2 * int(pulse_radius)), pygame.SRCALPHA
+            )
+            pygame.draw.circle(
+                temp_surface,
+                bus.color,
+                (int(pulse_radius), int(pulse_radius)),
+                int(pulse_radius),
+            )
+            screen.blit(
+                temp_surface,
+                (
+                    circle_position[0] - int(pulse_radius),
+                    circle_position[1] - int(pulse_radius),
+                ),
+            )
 
     pygame.display.flip()
     clock.tick(60)
