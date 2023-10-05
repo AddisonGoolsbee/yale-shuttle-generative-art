@@ -1,5 +1,7 @@
 # CPSC 334 Module 1 (Generative Art)
 
+[![Video Demo](https://youtu.be/d2sUghRlTS0?si=mUJdOdmNxAoiELPD](https://www.youtube.com/watch?v=YOUR_VIDEO_ID_HERE)
+
 ## Task 1
 Using Python, this program in `identify.py` creates a black screen. When clicked, a green pixel will appear. Its coordinates will be displayed in stdout, and they will be written in magenta on the screen. If the screen cannot be read (e.g. if the text is cut off), the terminal output should be used. If the terminal output is unreadable while running the program, we suggest exiting the program and reading the value from the terminal when a key point is found, then relaunching the program.
 

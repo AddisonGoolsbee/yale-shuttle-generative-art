@@ -5,6 +5,10 @@ import random
 import requests
 
 # Constants
+
+# Integer representing the bus stop we want to display data for
+STOP_INT = 3
+
 BACKGROUND_COLOR = (0, 0, 0)
 DEFAULT_COLOR = (255, 0, 0)
 NUM_CIRCLES = 50
@@ -16,8 +20,7 @@ BASE_PULSE_RANGE = 3
 CIRCLE_SIZE = 4
 CIRCLE_SIZE_RANGE = 3
 CIRCLE_MAX = 12
-# Integer representing the stop we want to display data for
-STOP_INT = 2
+
 # Out of 255, how transparent should the circles be?
 TRANSPARENCY = 128
 
@@ -151,8 +154,6 @@ for route, details in closest_shuttles.items():
 
 for bus in busses:
     bus.getCircles()
-
-print(len(busses[0].circles), len(busses[1].circles))
 
 clock = pygame.time.Clock()
 
