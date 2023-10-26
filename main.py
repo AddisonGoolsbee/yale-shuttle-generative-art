@@ -7,7 +7,7 @@ import requests
 # Constants
 
 # Integer representing the bus stop we want to display data for
-STOP_INT = 3
+STOP_INT = 10
 
 BACKGROUND_COLOR = (0, 0, 0)
 DEFAULT_COLOR = (255, 0, 0)
@@ -32,8 +32,6 @@ query_counter = 0  # Counter to keep track of UPDATE_EVENT occurrences
 QUERY_FREQUENCY = 1200
 
 
-
-
 # Name, circles, and time away for each bus route
 class Bus:
     def __init__(self, name, current_time=30, color=DEFAULT_COLOR):
@@ -56,83 +54,88 @@ class Bus:
 
     def getCircles(self):
         if random.random() < self.modifier:
-            circle_radius = (
-                random.randint(CIRCLE_SIZE, CIRCLE_SIZE_RANGE + CIRCLE_SIZE)
-                * (self.modifier**1.5)
-            )
-            circle_max_radius = (
-                random.randint(CIRCLE_MAX, CIRCLE_MAX + CIRCLE_SIZE_RANGE)
-                * (self.modifier**1.3)
-            )
-            circle_pulse_speed = (
-                random.uniform(PULSE_SPEED, PULSE_SPEED + PULSE_SPEED_RANGE)
-                * (self.modifier**1.5)
-            )
+            circle_radius = random.randint(
+                CIRCLE_SIZE, CIRCLE_SIZE_RANGE + CIRCLE_SIZE
+            ) * (self.modifier**1.5)
+            circle_max_radius = random.randint(
+                CIRCLE_MAX, CIRCLE_MAX + CIRCLE_SIZE_RANGE
+            ) * (self.modifier**1.3)
+            circle_pulse_speed = random.uniform(
+                PULSE_SPEED, PULSE_SPEED + PULSE_SPEED_RANGE
+            ) * (self.modifier**1.5)
             circle_position = (random.randint(0, WIDTH), random.randint(0, HEIGHT))
             pulsing_factor = (
                 random.uniform(BASE_PULSE, BASE_PULSE + BASE_PULSE_RANGE)
                 * self.modifier
                 / 5
             )
-            self.circles.append({
+            self.circles.append(
+                {
+                    "radius": circle_radius,
+                    "max_radius": circle_max_radius,
+                    "pulse_speed": circle_pulse_speed,
+                    "position": circle_position,
+                    "pulsing_factor": pulsing_factor,
+                    "lifetime": 20 * 1000,  # 20 seconds in milliseconds
+                    "alpha": 200,  # Mostly opaque to start
+                }
+            )
+
+    def addCircle(self):
+        circle_radius = (
+            random.randint(CIRCLE_SIZE, CIRCLE_SIZE_RANGE + CIRCLE_SIZE)
+            * self.modifier
+            / 1000
+        )
+        circle_max_radius = (
+            random.randint(CIRCLE_MAX, CIRCLE_MAX + CIRCLE_SIZE_RANGE)
+            * self.modifier
+            / 1000
+        )
+        circle_pulse_speed = (
+            random.uniform(PULSE_SPEED, PULSE_SPEED + PULSE_SPEED_RANGE)
+            * self.modifier
+            / 10
+        )
+        circle_position = (random.randint(0, WIDTH), random.randint(0, HEIGHT))
+        pulsing_factor = (
+            random.uniform(BASE_PULSE, BASE_PULSE + BASE_PULSE_RANGE) * self.modifier
+        )
+        self.circles.append(
+            {
                 "radius": circle_radius,
                 "max_radius": circle_max_radius,
                 "pulse_speed": circle_pulse_speed,
                 "position": circle_position,
                 "pulsing_factor": pulsing_factor,
                 "lifetime": 20 * 1000,  # 20 seconds in milliseconds
-                "alpha": 200  # Mostly opaque to start
-                })
-    def addCircle(self):
-        circle_radius = (
-            random.randint(CIRCLE_SIZE, CIRCLE_SIZE_RANGE + CIRCLE_SIZE)
-            * self.modifier/1000
+                "alpha": 200,  # Mostly opaque to start
+            }
         )
-        circle_max_radius = (
-            random.randint(CIRCLE_MAX, CIRCLE_MAX + CIRCLE_SIZE_RANGE)
-            * self.modifier/1000
-        )
-        circle_pulse_speed = (
-            random.uniform(PULSE_SPEED, PULSE_SPEED + PULSE_SPEED_RANGE)
-            * self.modifier/10
-        )
-        circle_position = (random.randint(0, WIDTH), random.randint(0, HEIGHT))
-        pulsing_factor = (
-            random.uniform(BASE_PULSE, BASE_PULSE + BASE_PULSE_RANGE)
-            * self.modifier
-        )
-        self.circles.append({
-            "radius": circle_radius,
-            "max_radius": circle_max_radius,
-            "pulse_speed": circle_pulse_speed,
-            "position": circle_position,
-            "pulsing_factor": pulsing_factor,
-            "lifetime": 20 * 1000,  # 20 seconds in milliseconds
-            "alpha": 200  # Mostly opaque to start
-        })
-
-            
-
-
 
 
 # Fetch JSON data
 url = f"https://yale.downtownerapp.com/routes_eta.php?stop={STOP_INT}"
+
+
 def fetch_and_process_shuttle_details(old_circles=None):
     response = requests.get(url)
     data = response.json()
     print(data)
     shuttle_details = data["etas"][f"{STOP_INT}"]["etas"]
-    
+
     closest_shuttles = {}
     for detail in shuttle_details:
         route = detail["route"]
-        if route not in closest_shuttles or detail["avg"] < closest_shuttles[route]["eta"]:
+        if (
+            route not in closest_shuttles
+            or detail["avg"] < closest_shuttles[route]["eta"]
+        ):
             closest_shuttles[route] = {
                 "eta": detail["avg"],
-                "color": route_to_color(route)
+                "color": route_to_color(route),
             }
-    
+
     busses = []
     for route, details in closest_shuttles.items():
         bus_name = f"Bus {route}"
@@ -143,8 +146,7 @@ def fetch_and_process_shuttle_details(old_circles=None):
             bus.circles = old_circles[bus_name]
             bus.addCircle()
         busses.append(bus)
-        
-    
+
     return busses
 
 
@@ -169,6 +171,7 @@ def route_to_color(route_int):
     }
     # return the color for the route
     return route_to_color_dict[route_int]
+
 
 # Initialize Pygame
 pygame.init()
@@ -202,7 +205,7 @@ while running:
             query_counter += 1
             if query_counter % QUERY_FREQUENCY == 0:
                 updated_busses = fetch_and_process_shuttle_details(old_circles)
-                
+
                 # Update busses with new data
                 for updated_bus in updated_busses:
                     for bus in busses:
@@ -227,9 +230,11 @@ while running:
             circle_position = circle["position"]
             pulsing_factor = circle["pulsing_factor"]
             circle_alpha = circle["alpha"]
-            
+
             circle["lifetime"] -= clock.get_time()  # Decrement by elapsed time
-            circle["alpha"] = int(255 * (circle["lifetime"] / (20 * 1000)))  # Adjust transparency based on remaining lifetime
+            circle["alpha"] = int(
+                255 * (circle["lifetime"] / (20 * 1000))
+            )  # Adjust transparency based on remaining lifetime
             pulse_radius = circle_radius + (
                 circle_max_radius - circle_radius
             ) * pulsing_factor * (
@@ -239,16 +244,19 @@ while running:
                 (2 * int(pulse_radius), 2 * int(pulse_radius)), pygame.SRCALPHA
             )
             color_with_alpha = bus.color[:3] + (circle_alpha,)
-            pygame.draw.circle(temp_surface, 
-                               color_with_alpha, 
-                               (int(pulse_radius), int(pulse_radius)), 
-                               int(pulse_radius))
-            screen.blit(temp_surface, 
-                        (
-                            circle_position[0] - int(pulse_radius), 
-                            circle_position[1] - int(pulse_radius)
-                        )
-                    )
+            pygame.draw.circle(
+                temp_surface,
+                color_with_alpha,
+                (int(pulse_radius), int(pulse_radius)),
+                int(pulse_radius),
+            )
+            screen.blit(
+                temp_surface,
+                (
+                    circle_position[0] - int(pulse_radius),
+                    circle_position[1] - int(pulse_radius),
+                ),
+            )
         bus.circles = [circle for circle in bus.circles if circle["lifetime"] > 0]
     pygame.display.flip()
     clock.tick(120)
